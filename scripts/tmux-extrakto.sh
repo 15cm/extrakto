@@ -10,6 +10,7 @@ extrakto_opt=$(get_option "@extrakto_default_opt")
 clip_tool=$(get_option "@extrakto_clip_tool")
 fzf_tool=$(get_option "@extrakto_fzf_tool")
 open_tool=$(get_option "@extrakto_open_tool")
+fzf_options=$(get_option "@extrakto_fzf_options")
 
 capture_pane_start=$(get_capture_pane_start "$grab_area")
 original_grab_area=${grab_area}  # keep this so we can cycle between alternatives on fzf
@@ -45,7 +46,7 @@ fi
 
 function capture() {
 
-  header="tab=insert, enter=copy"
+  header="enter=insert, ctrl-y=copy"
   if [ -n "$open_tool" ]; then header="$header, ctrl-o=open"; fi
   header="$header, ctrl-e=edit"
   header="$header, ctrl-f=toggle filter [$extrakto_opt], ctrl-l=grab area [$grab_area]"
@@ -62,9 +63,9 @@ function capture() {
   sel=$(tmux capture-pane -pJS ${capture_pane_start} -t ! | \
     $extrakto -r$extrakto_flags | \
     (read line && (echo $line; cat) || echo NO MATCH - use a different filter) | \
-    $fzf_tool \
+    $fzf_tool $fzf_options \
       --header="$header" \
-      --expect=tab,enter,ctrl-e,ctrl-f,ctrl-l,ctrl-o,ctrl-c,esc \
+      --expect=enter,ctrl-y,ctrl-e,ctrl-f,ctrl-l,ctrl-o,ctrl-c,esc \
       --tiebreak=index)
 
   if [ $? -gt 0 ]; then
@@ -75,20 +76,21 @@ function capture() {
   fi
 
   key=$(head -1 <<< "$sel")
-  text=$(tail -n +2 <<< "$sel")
+  text=$(tail -n +2 <<< "$sel" | tr '\n' ' ' | sed 's/[[:space:]]\{1,\}/ /g')
 
   case $key in
 
     enter)
       tmux set-buffer -- "$text"
+      tmux paste-buffer -t !
+      ;;
+
+    ctrl-y)
+      tmux set-buffer -- "$text"
       # run in background as xclip won't work otherwise
       tmux run-shell -b "tmux show-buffer|$clip_tool"
       ;;
 
-    tab)
-      tmux set-buffer -- "$text"
-      tmux paste-buffer -t !
-      ;;
 
     ctrl-f)
       if [[ $extrakto_opt == 'word' ]]; then

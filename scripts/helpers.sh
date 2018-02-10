@@ -39,6 +39,9 @@ get_option() {
 
         "@extrakto_open_tool")
             echo $(get_tmux_option $option "auto") ;;
+
+        "@extrakto_fzf_options")
+          echo $(get_tmux_option $option "") ;;
     esac
 }
 
