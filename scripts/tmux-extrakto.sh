@@ -11,6 +11,7 @@ clip_tool=$(get_option "@extrakto_clip_tool")
 fzf_tool=$(get_option "@extrakto_fzf_tool")
 open_tool=$(get_option "@extrakto_open_tool")
 fzf_options=$(get_option "@extrakto_fzf_options")
+split_size=$(get_option "@extrakto_split_size")
 
 capture_pane_start=$(get_capture_pane_start "$grab_area")
 original_grab_area=${grab_area}  # keep this so we can cycle between alternatives on fzf
@@ -138,7 +139,7 @@ function capture() {
 
 # check terminal size, zoom pane if too small
 lines=$(tput lines)
-if [ $lines -lt 7 ]; then
+if [ $lines -lt $split_size ]; then
   tmux resize-pane -Z
 fi
 
