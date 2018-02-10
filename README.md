@@ -68,6 +68,7 @@ Where `<option>` and `<value>` are one of the specified here:
 | `@extrakto_clip_tool`       | `auto`  | Set this to whatever clipboard tool you would like extrakto to use to copy data into your clipboard. `auto` will try to choose the correct clipboard for your platform. |
 | `@extrakto_fzf_tool`        | `fzf`   | Set this to path of fzf if it can't be found in your `PATH`. |
 | `@extrakto_open_tool`       | `auto`  | Set this to path of your own tool or `auto` to use your platforms *open* implementation. |
+| `@extrakto_fzf_options` | '' | Set this to your fzf options. |
 
 
 Example:
