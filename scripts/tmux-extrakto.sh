@@ -6,7 +6,7 @@ extrakto="$CURRENT_DIR/../extrakto.py"
 
 # options
 grab_area=$(get_option "@extrakto_grab_area")
-extrakto_opt=$(get_option "@extrakto_default_opt")
+extrakto_opts=$(get_option "@extrakto_opts")
 clip_tool=$(get_option "@extrakto_clip_tool")
 fzf_tool=$(get_option "@extrakto_fzf_tool")
 open_tool=$(get_option "@extrakto_open_tool")
@@ -15,6 +15,9 @@ split_size=$(get_option "@extrakto_split_size")
 
 capture_pane_start=$(get_capture_pane_start "$grab_area")
 original_grab_area=${grab_area}  # keep this so we can cycle between alternatives on fzf
+
+extrakto_opt_arr=($(echo $extrakto_opts))
+extrakto_opt_index=0
 
 if [[ "$clip_tool" == "auto" ]]; then
   case "`uname`" in
@@ -46,6 +49,7 @@ else
 fi
 
 function capture() {
+  extrakto_opt=${extrakto_opt_arr[$extrakto_opt_index]}
 
   header="enter=insert, ctrl-y=copy"
   if [ -n "$open_tool" ]; then header="$header, ctrl-o=open"; fi
@@ -94,13 +98,8 @@ function capture() {
 
 
     ctrl-f)
-      if [[ $extrakto_opt == 'word' ]]; then
-        extrakto_opt='path/url'
-      elif [[ $extrakto_opt == 'path/url' ]]; then
-        extrakto_opt='lines'
-      else
-        extrakto_opt='word'
-      fi
+      (( extrakto_opt_index++ ))
+      [ $extrakto_opt_index -eq ${#extrakto_opt_arr[@]} ] && extrakto_opt_index=0
       capture
       ;;
 

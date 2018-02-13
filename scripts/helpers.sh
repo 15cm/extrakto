@@ -19,8 +19,8 @@ get_option() {
         "@extrakto_key")
             echo $(get_tmux_option $option "tab") ;;
 
-        "@extrakto_default_opt")
-            echo $(get_tmux_option $option "word") ;;
+        "@extrakto_opts")
+            echo $(get_tmux_option $option "path/url word lines") ;;
 
         "@extrakto_split_direction")
             echo $(get_tmux_option $option "v") ;;
