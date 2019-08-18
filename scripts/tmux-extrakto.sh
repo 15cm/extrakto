@@ -146,7 +146,7 @@ function capture() {
 
     ctrl-o)
       if [ -n "$open_tool" ]; then
-        tmux run-shell -b "cd $PWD; $open_tool $text"
+        tmux run-shell -b "cd $PWD; $open_tool '$text'"
       else
         capture
       fi
@@ -158,7 +158,7 @@ function capture() {
 
     ctrl-u)
       if [ -n "$browser_tool" ]; then
-        tmux run-shell -b "$browser_tool $text"
+        tmux run-shell -b "$browser_tool '$text'"
       else
         capture
       fi
