@@ -11,6 +11,7 @@ extrakto_opts=$(get_option "@extrakto_opts")
 clip_tool=$(get_option "@extrakto_clip_tool")
 fzf_tool=$(get_option "@extrakto_fzf_tool")
 open_tool=$(get_option "@extrakto_open_tool")
+browser_tool=$(get_option "@extrakto_browser_tool")
 fzf_options=$(get_option "@extrakto_fzf_options")
 split_size=$(get_option "@extrakto_split_size")
 
@@ -70,6 +71,7 @@ function capture() {
   if [ -n "$open_tool" ]; then header="$header, ctrl-o=open"; fi
   header="$header, ctrl-e=edit"
   header="$header, ctrl-f=toggle filter [$extrakto_opt], ctrl-l=grab area [$grab_area]"
+  if [ -n "$browser_tool" ]; then header="$header, ctrl-u=open in browser"; fi
 
   case $extrakto_opt in
     'path/url') extrakto_flags='pu' ;;
@@ -85,7 +87,7 @@ function capture() {
     (read line && (echo $line; cat) || echo NO MATCH - use a different filter) | \
     $fzf_tool $fzf_options \
       --header="$header" \
-      --expect=enter,ctrl-y,ctrl-e,ctrl-f,ctrl-l,ctrl-o,ctrl-c,esc \
+      --expect=enter,ctrl-y,ctrl-e,ctrl-f,ctrl-l,ctrl-o,ctrl-c,ctrl-u,esc \
       --tiebreak=index)
 
   if [ $? -gt 0 ]; then
@@ -152,6 +154,14 @@ function capture() {
 
     ctrl-e)
       tmux send-keys -t ! "$editor -- $text" 'C-m'
+      ;;
+
+    ctrl-u)
+      if [ -n "$browser_tool" ]; then
+        tmux run-shell -b "$browser_tool $text"
+      else
+        capture
+      fi
       ;;
   esac
 }

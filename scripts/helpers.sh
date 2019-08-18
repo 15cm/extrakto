@@ -40,6 +40,9 @@ get_option() {
         "@extrakto_open_tool")
             echo $(get_tmux_option $option "auto") ;;
 
+        "@extrakto_browser_tool")
+          echo $(get_tmux_option $option "") ;;
+
         "@extrakto_fzf_options")
           echo $(get_tmux_option $option "") ;;
     esac
